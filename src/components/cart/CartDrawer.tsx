@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Minus, Plus, Trash2, ShoppingCart, X } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useCart } from "@/contexts/CartContext";
 import {
   Sheet,
   SheetContent,
@@ -13,44 +13,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  quantity: number;
-  image: string;
-  prescriptionRequired?: boolean;
-}
-
-const mockCartItems: CartItem[] = [
-  {
-    id: "1",
-    name: "Dipirona Sódica 500mg - 20 comprimidos",
-    price: 8.90,
-    originalPrice: 12.50,
-    quantity: 2,
-    image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=100&h=100&fit=crop"
-  },
-  {
-    id: "2",
-    name: "Vitamina D3 2000UI - 60 cápsulas",
-    price: 24.90,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1584362917165-526a968579e8?w=100&h=100&fit=crop"
-  },
-  {
-    id: "3",
-    name: "Omeprazol 20mg - 28 cápsulas",
-    price: 15.50,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=100&h=100&fit=crop",
-    prescriptionRequired: true
-  }
-];
-
 export const CartDrawer = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems);
+  const { items, updateQuantity, removeFromCart, getTotalItems, getTotalPrice } = useCart();
 
   const formatPrice = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -59,26 +23,10 @@ export const CartDrawer = () => {
     }).format(value);
   };
 
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      removeItem(id);
-      return;
-    }
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-
-  const removeItem = (id: string) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = getTotalPrice();
   const shipping = subtotal > 50 ? 0 : 8.90;
   const total = subtotal + shipping;
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems = getTotalItems();
 
   return (
     <Sheet>
@@ -107,7 +55,7 @@ export const CartDrawer = () => {
         <div className="flex flex-col h-full">
           {/* Cart Items */}
           <div className="flex-1 overflow-y-auto py-6 space-y-4">
-            {cartItems.length === 0 ? (
+            {items.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center">
                 <ShoppingCart className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="font-medium mb-2">Seu carrinho está vazio</h3>
@@ -117,7 +65,7 @@ export const CartDrawer = () => {
                 <Button variant="outline">Continuar Comprando</Button>
               </div>
             ) : (
-              cartItems.map((item) => (
+              items.map((item) => (
                 <Card key={item.id} className="border-0 shadow-sm">
                   <CardContent className="p-4">
                     <div className="flex gap-3">
@@ -136,7 +84,7 @@ export const CartDrawer = () => {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeFromCart(item.id)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -189,7 +137,7 @@ export const CartDrawer = () => {
           </div>
 
           {/* Cart Summary */}
-          {cartItems.length > 0 && (
+          {items.length > 0 && (
             <div className="border-t pt-6 space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">

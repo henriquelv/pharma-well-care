@@ -2,6 +2,8 @@ import { ShoppingCart, Heart, Star, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { useCart } from "@/contexts/CartContext";
+import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
   id: string;
@@ -18,6 +20,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({
+  id,
   name,
   description,
   price,
@@ -29,6 +32,9 @@ export const ProductCard = ({
   inStock = true,
   discount
 }: ProductCardProps) => {
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+
   const formatPrice = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -36,10 +42,31 @@ export const ProductCard = ({
     }).format(value);
   };
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (inStock) {
+      addToCart({
+        id,
+        name,
+        price,
+        originalPrice,
+        image,
+        prescriptionRequired,
+        inStock
+      });
+    }
+  };
+
+  const handleProductClick = () => {
+    navigate(`/produto/${id}`);
+  };
+
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-0 shadow-md">
+    <Card 
+      className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 shadow-md cursor-pointer hover-lift animate-fade-in bg-gradient-card"
+      onClick={handleProductClick}
+    >
       <CardContent className="p-0">
-        {/* Image Container */}
         <div className="relative overflow-hidden rounded-t-lg bg-gray-50 h-48">
           <img
             src={image}
@@ -125,6 +152,7 @@ export const ProductCard = ({
             className="w-full" 
             disabled={!inStock}
             size="sm"
+            onClick={handleAddToCart}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
             {inStock ? 'Adicionar ao Carrinho' : 'Indisponível'}

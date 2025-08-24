@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Heart, Share2, ShoppingCart, Star, Truck, Shield, FileText, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,41 +8,52 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { useCart } from "@/contexts/CartContext";
+import { products } from "@/data/products";
 
 export const ProductDetail = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
 
-  const product = {
-    id: "1",
-    name: "Dipirona Sódica 500mg - 20 comprimidos",
-    description: "Analgésico e antitérmico indicado para dores e febre",
-    price: 8.90,
-    originalPrice: 12.50,
-    discount: 28,
-    rating: 4.8,
-    reviewCount: 124,
-    sku: "DIP500-20",
-    ean: "7891234567890",
-    prescriptionRequired: false,
-    inStock: true,
-    stockQuantity: 150,
-    images: [
-      "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=600&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&h=600&fit=crop"
-    ],
-    manufacturer: "Medley",
-    activeIngredient: "Dipirona Sódica",
-    dosage: "500mg",
-    form: "Comprimidos"
-  };
+  const product = products.find(p => p.id === id);
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Produto não encontrado</h1>
+            <Button onClick={() => navigate('/')}>Voltar à página inicial</Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const formatPrice = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
     }).format(value);
+  };
+
+  const handleAddToCart = () => {
+    for (let i = 0; i < quantity; i++) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        image: product.image,
+        prescriptionRequired: product.prescriptionRequired,
+        inStock: product.inStock || true
+      });
+    }
   };
 
   return (
@@ -51,14 +63,14 @@ export const ProductDetail = () => {
       <main className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Button variant="ghost" size="sm" className="p-0 h-auto">
+          <Button variant="ghost" size="sm" className="p-0 h-auto" onClick={() => navigate('/')}>
             <ArrowLeft className="h-4 w-4 mr-1" />
             Voltar
           </Button>
           <span>/</span>
           <span>Medicamentos</span>
           <span>/</span>
-          <span>Analgésicos</span>
+          <span>{product.category || 'Produtos'}</span>
           <span>/</span>
           <span className="text-foreground">{product.name}</span>
         </div>
@@ -68,13 +80,13 @@ export const ProductDetail = () => {
           <div className="space-y-4">
             <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden">
               <img
-                src={product.images[selectedImage]}
+                src={product.images?.[selectedImage] || product.image}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="flex gap-2">
-              {product.images.map((image, index) => (
+              {(product.images || [product.image]).map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
@@ -174,13 +186,13 @@ export const ProductDetail = () => {
                   </Button>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {product.stockQuantity} disponíveis
+                  {product.stockQuantity || 0} disponíveis
                 </span>
               </div>
 
-              <Button className="w-full h-12 text-lg">
+              <Button className="w-full h-12 text-lg" onClick={handleAddToCart} disabled={!product.inStock}>
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                Adicionar ao Carrinho - {formatPrice(product.price * quantity)}
+                {product.inStock ? `Adicionar ao Carrinho - ${formatPrice(product.price * quantity)}` : 'Produto Indisponível'}
               </Button>
             </div>
 
@@ -224,23 +236,29 @@ export const ProductDetail = () => {
               </TabsList>
               
               <TabsContent value="description" className="mt-6">
-                <div className="space-y-4">
-                  <p>{product.description}</p>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="font-medium">Fabricante:</span> {product.manufacturer}
-                    </div>
-                    <div>
-                      <span className="font-medium">Princípio Ativo:</span> {product.activeIngredient}
-                    </div>
-                    <div>
-                      <span className="font-medium">Dosagem:</span> {product.dosage}
-                    </div>
-                    <div>
-                      <span className="font-medium">Forma:</span> {product.form}
+                  <div className="space-y-4">
+                    <p>{product.description}</p>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium">Fabricante:</span> {product.manufacturer || 'N/A'}
+                      </div>
+                      <div>
+                        <span className="font-medium">Princípio Ativo:</span> {product.activeIngredient || 'N/A'}
+                      </div>
+                      <div>
+                        <span className="font-medium">Dosagem:</span> {product.dosage || 'N/A'}
+                      </div>
+                      <div>
+                        <span className="font-medium">Forma:</span> {product.form || 'N/A'}
+                      </div>
+                      <div>
+                        <span className="font-medium">SKU:</span> {product.sku || 'N/A'}
+                      </div>
+                      <div>
+                        <span className="font-medium">EAN:</span> {product.ean || 'N/A'}
+                      </div>
                     </div>
                   </div>
-                </div>
               </TabsContent>
               
               <TabsContent value="composition" className="mt-6">

@@ -15,7 +15,7 @@ export const Header = () => {
               <Phone className="h-4 w-4" />
               <span>(11) 99999-9999</span>
             </div>
-            <span className="hidden md:block">Horário: Seg-Sáb 7h às 22h</span>
+            <span className="hidden md:block">Segunda a Sábado: 7h às 22h | Domingo: 9h às 18h</span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
