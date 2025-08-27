@@ -10,52 +10,52 @@ import {
   Eye,
   Star
 } from "lucide-react";
+import { useAdmin } from "@/contexts/AdminContext";
 
 const Dashboard = () => {
-  const stats = [
+  const { stats, sales, products } = useAdmin();
+
+  const statsCards = [
     {
       title: "Total de Produtos",
-      value: "156",
-      description: "12 produtos adicionados este mês",
+      value: stats.totalProducts.toString(),
+      description: `${products.filter(p => p.inStock).length} disponíveis`,
       icon: Package,
       color: "text-blue-600"
     },
     {
       title: "Pedidos Hoje",
-      value: "23",
-      description: "+15% comparado a ontem",
+      value: stats.todayOrders.toString(),
+      description: `+${Math.round((stats.todayOrders / (sales.length || 1)) * 100)}% do total`,
       icon: ShoppingCart,
       color: "text-green-600"
     },
     {
       title: "Receita Total",
-      value: "R$ 12.450",
-      description: "+8% comparado ao mês passado",
+      value: `R$ ${stats.totalRevenue.toFixed(2)}`,
+      description: `Média: R$ ${(stats.totalRevenue / (sales.length || 1)).toFixed(2)}`,
       icon: DollarSign,
       color: "text-emerald-600"
     },
     {
       title: "Estoque Baixo",
-      value: "8",
+      value: stats.lowStock.toString(),
       description: "Produtos com menos de 10 unidades",
       icon: AlertTriangle,
       color: "text-red-600"
     }
   ];
 
-  const recentOrders = [
-    { id: "#001", customer: "Maria Silva", total: "R$ 85,50", status: "Confirmado" },
-    { id: "#002", customer: "João Santos", total: "R$ 125,00", status: "Preparando" },
-    { id: "#003", customer: "Ana Costa", total: "R$ 45,80", status: "Entregue" },
-    { id: "#004", customer: "Pedro Lima", total: "R$ 95,20", status: "Pendente" }
-  ];
+  const recentOrders = sales.slice(-4).reverse();
 
-  const topProducts = [
-    { name: "Paracetamol 500mg", sales: 45, revenue: "R$ 315,00" },
-    { name: "Dipirona 500mg", sales: 38, revenue: "R$ 228,00" },
-    { name: "Omeprazol 20mg", sales: 32, revenue: "R$ 480,00" },
-    { name: "Vitamina D3", sales: 28, revenue: "R$ 420,00" }
-  ];
+  const topProducts = products
+    .sort((a, b) => (b.stockQuantity || 0) - (a.stockQuantity || 0))
+    .slice(0, 4)
+    .map(product => ({
+      name: product.name,
+      sales: Math.floor(Math.random() * 50) + 10, // Mock sales data
+      revenue: `R$ ${(product.price * (Math.floor(Math.random() * 50) + 10)).toFixed(2)}`
+    }));
 
   return (
     <div className="space-y-8">
@@ -68,7 +68,7 @@ const Dashboard = () => {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, index) => (
+        {statsCards.map((stat, index) => (
           <Card key={index}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -97,25 +97,25 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between">
+              {recentOrders.map((sale) => (
+                <div key={sale.id} className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium">{order.id}</span>
-                      <span className="text-sm text-muted-foreground">{order.customer}</span>
+                      <span className="text-sm font-medium">#{sale.id}</span>
+                      <span className="text-sm text-muted-foreground">{sale.customerName}</span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium">{order.total}</span>
+                    <span className="text-sm font-medium">R$ {sale.total.toFixed(2)}</span>
                     <Badge 
                       variant={
-                        order.status === "Entregue" ? "default" :
-                        order.status === "Confirmado" ? "secondary" :
-                        order.status === "Preparando" ? "outline" : 
+                        sale.status === "Entregue" ? "default" :
+                        sale.status === "Confirmado" ? "secondary" :
+                        sale.status === "Preparando" ? "outline" : 
                         "destructive"
                       }
                     >
-                      {order.status}
+                      {sale.status}
                     </Badge>
                   </div>
                 </div>

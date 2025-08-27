@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
+import { useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -12,9 +13,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { CheckoutDialog } from "./CheckoutDialog";
 
 export const CartDrawer = () => {
   const { items, updateQuantity, removeFromCart, getTotalItems, getTotalPrice } = useCart();
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const formatPrice = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -29,30 +32,32 @@ export const CartDrawer = () => {
   const totalItems = getTotalItems();
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="relative h-12 w-12">
-          <ShoppingCart className="h-5 w-5" />
-          {totalItems > 0 && (
-            <Badge className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs">
-              {totalItems}
-            </Badge>
-          )}
-        </Button>
-      </SheetTrigger>
-      
-      <SheetContent className="w-full sm:max-w-lg">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
+    <>
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="icon" className="relative h-12 w-12">
             <ShoppingCart className="h-5 w-5" />
-            Seu Carrinho ({totalItems} {totalItems === 1 ? 'item' : 'itens'})
-          </SheetTitle>
-          <SheetDescription>
-            Revise seus produtos antes de finalizar a compra
-          </SheetDescription>
-        </SheetHeader>
+            {totalItems > 0 && (
+              <Badge className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs">
+                {totalItems}
+              </Badge>
+            )}
+          </Button>
+        </SheetTrigger>
+        
+        <SheetContent className="w-full sm:max-w-lg">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <ShoppingCart className="h-5 w-5" />
+              Seu Carrinho ({totalItems} {totalItems === 1 ? 'item' : 'itens'})
+            </SheetTitle>
+            <SheetDescription>
+              Revise seus produtos antes de finalizar a compra
+            </SheetDescription>
+          </SheetHeader>
 
-        <div className="flex flex-col h-full">
+          <div className="flex flex-col h-full">
+            {/* ... keep existing code ... */}
           {/* Cart Items */}
           <div className="flex-1 overflow-y-auto py-6 space-y-4">
             {items.length === 0 ? (
@@ -163,7 +168,10 @@ export const CartDrawer = () => {
               </div>
 
               <div className="space-y-2">
-                <Button className="w-full h-12 text-lg">
+                <Button 
+                  className="w-full h-12 text-lg"
+                  onClick={() => setShowCheckout(true)}
+                >
                   Finalizar Compra
                 </Button>
                 <Button variant="outline" className="w-full">
@@ -179,5 +187,11 @@ export const CartDrawer = () => {
         </div>
       </SheetContent>
     </Sheet>
+
+    <CheckoutDialog 
+      open={showCheckout}
+      onClose={() => setShowCheckout(false)}
+    />
+  </>
   );
 };

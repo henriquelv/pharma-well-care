@@ -27,11 +27,16 @@ import {
   Star,
   StarOff
 } from "lucide-react";
-import { products } from "@/data/products";
+import { useAdmin } from "@/contexts/AdminContext";
+import { ProductEditDialog } from "@/components/admin/ProductEditDialog";
+import { Product } from "@/data/products";
 
 const ProductsManagement = () => {
+  const { products, categories, deleteProduct } = useAdmin();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
   
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -40,7 +45,23 @@ const ProductsManagement = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const categories = [...new Set(products.map(p => p.category))];
+  const categoryNames = [...new Set(categories.map(c => c.name))];
+
+  const handleEdit = (product: Product) => {
+    setEditingProduct(product);
+    setShowDialog(true);
+  };
+
+  const handleAdd = () => {
+    setEditingProduct(null);
+    setShowDialog(true);
+  };
+
+  const handleDelete = (productId: string) => {
+    if (confirm("Tem certeza que deseja excluir este produto?")) {
+      deleteProduct(productId);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -51,7 +72,7 @@ const ProductsManagement = () => {
             Gerencie seu catálogo de medicamentos e produtos
           </p>
         </div>
-        <Button>
+        <Button onClick={handleAdd}>
           <Plus className="mr-2 h-4 w-4" />
           Novo Produto
         </Button>
@@ -79,7 +100,7 @@ const ProductsManagement = () => {
             <DropdownMenuItem onClick={() => setFilterCategory("all")}>
               Todas as Categorias
             </DropdownMenuItem>
-            {categories.map(category => (
+            {categoryNames.map(category => (
               <DropdownMenuItem 
                 key={category}
                 onClick={() => setFilterCategory(category)}
@@ -150,15 +171,14 @@ const ProductsManagement = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Eye className="mr-2 h-4 w-4" />
-                        Visualizar
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleEdit(product)}>
                         <Edit className="mr-2 h-4 w-4" />
                         Editar
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">
+                      <DropdownMenuItem 
+                        className="text-destructive"
+                        onClick={() => handleDelete(product.id)}
+                      >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Excluir
                       </DropdownMenuItem>
@@ -170,6 +190,12 @@ const ProductsManagement = () => {
           </TableBody>
         </Table>
       </div>
+
+      <ProductEditDialog 
+        product={editingProduct || undefined}
+        open={showDialog}
+        onClose={() => setShowDialog(false)}
+      />
     </div>
   );
 };
