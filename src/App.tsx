@@ -7,6 +7,10 @@ import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
 import { ProductDetail } from "./pages/ProductDetail";
 import NotFound from "./pages/NotFound";
+import AdminLayout from "./pages/admin/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import ProductsManagement from "./pages/admin/ProductsManagement";
+import OrdersManagement from "./pages/admin/OrdersManagement";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +24,14 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/produto/:id" element={<ProductDetail />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="products" element={<ProductsManagement />} />
+              <Route path="orders" element={<OrdersManagement />} />
+            </Route>
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,7 +1,8 @@
-import { Search, Phone, Menu } from "lucide-react";
+import { Search, Phone, Menu, Settings, User, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { NavLink } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 export const Header = () => {
@@ -21,6 +22,16 @@ export const Header = () => {
             <Button variant="outline" size="sm" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
               WhatsApp
             </Button>
+            <Button variant="outline" size="sm" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+              <User className="h-4 w-4 mr-1" />
+              Login
+            </Button>
+            <NavLink to="/admin">
+              <Button variant="outline" size="sm" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+                <Settings className="h-4 w-4 mr-1" />
+                Admin
+              </Button>
+            </NavLink>
           </div>
         </div>
       </div>
