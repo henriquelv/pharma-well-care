@@ -25,7 +25,7 @@ interface CheckoutDialogProps {
 }
 
 export const CheckoutDialog = ({ open, onClose }: CheckoutDialogProps) => {
-  const { checkout, getTotalPrice, items } = useCart();
+  const { clearCart, getTotalPrice, items } = useCart();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -44,12 +44,12 @@ export const CheckoutDialog = ({ open, onClose }: CheckoutDialogProps) => {
       return;
     }
 
-    checkout(formData);
-    
     toast({
       title: "Pedido realizado!",
       description: `Seu pedido no valor de R$ ${getTotalPrice().toFixed(2)} foi registrado com sucesso.`,
     });
+
+    clearCart();
 
     // Reset form
     setFormData({
