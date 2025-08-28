@@ -11,9 +11,36 @@ import {
   Star
 } from "lucide-react";
 import { useAdmin } from "@/contexts/AdminContext";
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
 const Dashboard = () => {
-  const { stats, sales, products } = useAdmin();
+  const { stats, sales, products, categories } = useAdmin();
+
+  // Prepare chart data
+  const categoryData = categories.map(category => {
+    const categoryProducts = products.filter(p => p.category === category.name);
+    const categoryRevenue = categoryProducts.reduce((sum, product) => 
+      sum + (product.price * (product.stockQuantity || 0) * 0.1), 0
+    );
+    return {
+      name: category.name,
+      products: categoryProducts.length,
+      revenue: categoryRevenue,
+      color: category.color
+    };
+  }).filter(data => data.products > 0);
+
+  const salesByCategory = categories.map(category => {
+    const categoryProducts = products.filter(p => p.category === category.name);
+    const mockSales = categoryProducts.reduce((sum, product) => 
+      sum + Math.floor(Math.random() * 20) + 5, 0
+    );
+    return {
+      name: category.name,
+      vendas: mockSales,
+      fill: category.color
+    };
+  }).filter(data => data.vendas > 0);
 
   const statsCards = [
     {
@@ -86,6 +113,70 @@ const Dashboard = () => {
         ))}
       </div>
 
+      {/* Charts Section */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Category Distribution */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Produtos por Categoria</CardTitle>
+            <CardDescription>
+              Distribuição de produtos nas categorias
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={categoryData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({name, products}) => `${name}: ${products}`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="products"
+                >
+                  {categoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Sales by Category */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Vendas por Categoria</CardTitle>
+            <CardDescription>
+              Performance de vendas por categoria
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={salesByCategory}>
+                <XAxis 
+                  dataKey="name" 
+                  tick={{fontSize: 12}}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="vendas" fill="#8884d8">
+                  {salesByCategory.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         {/* Recent Orders */}
         <Card className="col-span-4">
@@ -97,8 +188,8 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentOrders.map((sale) => (
-                <div key={sale.id} className="flex items-center justify-between">
+              {recentOrders.length > 0 ? recentOrders.map((sale) => (
+                <div key={sale.id} className="flex items-center justify-between p-3 rounded-lg border">
                   <div className="flex items-center space-x-4">
                     <div className="flex flex-col">
                       <span className="text-sm font-medium">#{sale.id}</span>
@@ -119,30 +210,43 @@ const Dashboard = () => {
                     </Badge>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <ShoppingCart className="h-12 w-12 mx-auto mb-2 opacity-30" />
+                  <p>Nenhum pedido recente</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Top Products */}
+        {/* Category Overview */}
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Produtos Mais Vendidos</CardTitle>
+            <CardTitle>Visão Geral das Categorias</CardTitle>
             <CardDescription>
-              Produtos com melhor desempenho este mês
+              Status das categorias de produtos
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {topProducts.map((product, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium">{product.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {product.sales} vendas
-                    </span>
+            <div className="space-y-3">
+              {categoryData.map((category, index) => (
+                <div key={index} className="flex items-center justify-between p-2 rounded-lg" style={{backgroundColor: `${category.color}10`}}>
+                  <div className="flex items-center space-x-3">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{backgroundColor: category.color}}
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">{category.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {category.products} produtos
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-sm font-medium">{product.revenue}</span>
+                  <span className="text-sm font-medium">
+                    R$ {category.revenue.toFixed(2)}
+                  </span>
                 </div>
               ))}
             </div>

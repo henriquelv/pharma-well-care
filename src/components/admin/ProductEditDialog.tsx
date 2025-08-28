@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,20 +31,57 @@ export const ProductEditDialog = ({ product, open, onClose }: ProductEditDialogP
   const { updateProduct, addProduct, categories } = useAdmin();
   
   const [formData, setFormData] = useState({
-    name: product?.name || "",
-    description: product?.description || "",
-    price: product?.price || 0,
-    originalPrice: product?.originalPrice || 0,
-    category: product?.category || "",
-    manufacturer: product?.manufacturer || "",
-    activeIngredient: product?.activeIngredient || "",
-    dosage: product?.dosage || "",
-    form: product?.form || "",
-    stockQuantity: product?.stockQuantity || 0,
-    inStock: product?.inStock ?? true,
-    prescriptionRequired: product?.prescriptionRequired ?? false,
-    image: product?.image || "",
+    name: "",
+    description: "",
+    price: 0,
+    originalPrice: 0,
+    category: "",
+    manufacturer: "",
+    activeIngredient: "",
+    dosage: "",
+    form: "",
+    stockQuantity: 0,
+    inStock: true,
+    prescriptionRequired: false,
+    image: "",
   });
+
+  // Update form data when product prop changes
+  useEffect(() => {
+    if (product) {
+      setFormData({
+        name: product.name || "",
+        description: product.description || "",
+        price: product.price || 0,
+        originalPrice: product.originalPrice || 0,
+        category: product.category || "",
+        manufacturer: product.manufacturer || "",
+        activeIngredient: product.activeIngredient || "",
+        dosage: product.dosage || "",
+        form: product.form || "",
+        stockQuantity: product.stockQuantity || 0,
+        inStock: product.inStock ?? true,
+        prescriptionRequired: product.prescriptionRequired ?? false,
+        image: product.image || "",
+      });
+    } else {
+      setFormData({
+        name: "",
+        description: "",
+        price: 0,
+        originalPrice: 0,
+        category: "",
+        manufacturer: "",
+        activeIngredient: "",
+        dosage: "",
+        form: "",
+        stockQuantity: 0,
+        inStock: true,
+        prescriptionRequired: false,
+        image: "",
+      });
+    }
+  }, [product, open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
