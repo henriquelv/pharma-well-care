@@ -29,6 +29,8 @@ export interface Sale {
   customerId: string;
   customerName: string;
   customerEmail: string;
+  customerPhone?: string;
+  customerAddress?: string;
   items: Array<{
     productId: string;
     productName: string;
@@ -42,13 +44,21 @@ export interface Sale {
 }
 
 export interface SiteSettings {
-  name: string;
-  phone: string;
-  whatsapp: string;
-  hours: string;
+  storeName: string;
+  storeEmail: string;
+  storePhone: string;
+  storeAddress: string;
+  currency: string;
+  taxRate: number;
+  openTime: string;
+  closeTime: string;
+  weekendOpen: boolean;
+  orderNotifications: boolean;
+  stockAlerts: boolean;
+  weeklyReports: boolean;
+  maintenanceMode: boolean;
+  theme: 'light' | 'dark' | 'auto';
   primaryColor: string;
-  secondaryColor: string;
-  logo: string;
 }
 
 interface AdminContextType {
@@ -79,7 +89,7 @@ interface AdminContextType {
   addSale: (sale: Omit<Sale, "id" | "date">) => void;
   updateSaleStatus: (saleId: string, status: Sale["status"]) => void;
   // Settings actions
-  updateSettings: (updates: Partial<SiteSettings>) => void;
+  updateSiteSettings: (updates: Partial<SiteSettings>) => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -151,13 +161,21 @@ const defaultSales: Sale[] = [
 ];
 
 const defaultSettings: SiteSettings = {
-  name: "Farmácia Bom Jesus",
-  phone: "(11) 99999-9999",
-  whatsapp: "(11) 99999-9999", 
-  hours: "Segunda a Sábado: 7h às 22h | Domingo: 9h às 18h",
-  primaryColor: "#16a34a",
-  secondaryColor: "#059669",
-  logo: "/src/assets/logo.png"
+  storeName: "Farmácia Bom Jesus",
+  storeEmail: "contato@farmaciabomjesus.com.br",
+  storePhone: "(11) 99999-9999",
+  storeAddress: "Rua das Flores, 123, Centro - São Paulo, SP",
+  currency: "BRL",
+  taxRate: 0,
+  openTime: "08:00",
+  closeTime: "22:00",
+  weekendOpen: true,
+  orderNotifications: true,
+  stockAlerts: true,
+  weeklyReports: false,
+  maintenanceMode: false,
+  theme: 'light' as const,
+  primaryColor: "#16a34a"
 };
 
 export const AdminProvider = ({ children }: { children: ReactNode }) => {
@@ -276,7 +294,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Settings actions
-  const updateSettings = (updates: Partial<SiteSettings>) => {
+  const updateSiteSettings = (updates: Partial<SiteSettings>) => {
     setSiteSettings(prev => ({ ...prev, ...updates }));
   };
 
@@ -299,7 +317,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
       addPromotion,
       addSale,
       updateSaleStatus,
-      updateSettings
+      updateSiteSettings
     }}>
       {children}
     </AdminContext.Provider>

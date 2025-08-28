@@ -49,12 +49,12 @@ const AdminLayout = () => {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between h-16 px-6 border-b">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">FB</span>
-              </div>
-              <span className="font-semibold">Admin Panel</span>
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-sm">FB</span>
             </div>
+            <span className="font-semibold">Admin Panel</span>
+          </div>
             <Button 
               variant="ghost" 
               size="sm"
@@ -65,7 +65,6 @@ const AdminLayout = () => {
             </Button>
           </div>
 
-          {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2">
             {navigation.map((item) => (
               <NavLink
@@ -103,7 +102,6 @@ const AdminLayout = () => {
 
       {/* Main content */}
       <div className="lg:pl-64">
-        {/* Top bar */}
         <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
           <Button
             variant="ghost"
@@ -113,17 +111,14 @@ const AdminLayout = () => {
           >
             <Menu className="h-4 w-4" />
           </Button>
-          
           <div className="flex-1">
             <h1 className="text-lg font-semibold">Painel Administrativo - Farmácia Bom Jesus</h1>
           </div>
-
           <div className="flex items-center space-x-4">
             <span className="text-sm text-muted-foreground">Admin</span>
           </div>
         </header>
 
-        {/* Page content */}
         <main className="p-6">
           <Outlet />
         </main>

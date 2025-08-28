@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { useAdmin } from './AdminContext';
 
 export interface CartItem {
   id: string;
@@ -14,12 +15,13 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Omit<CartItem, 'quantity'>) => void;
+  addToCart: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  checkout: (customerInfo: { name: string; email: string; phone: string; address: string }) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -38,8 +40,9 @@ interface CartProviderProps {
 
 export const CartProvider = ({ children }: CartProviderProps) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const { addSale } = useAdmin();
 
-  const addToCart = (product: Omit<CartItem, 'quantity'>) => {
+  const addToCart = (product: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
     if (!product.inStock) {
       toast({
         title: "Produto Indisponível",
@@ -48,6 +51,8 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       });
       return;
     }
+
+    const quantityToAdd = product.quantity || 1;
 
     setItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
@@ -59,7 +64,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         });
         return prevItems.map(item =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + quantityToAdd }
             : item
         );
       } else {
@@ -67,7 +72,8 @@ export const CartProvider = ({ children }: CartProviderProps) => {
           title: "Produto Adicionado",
           description: `${product.name} foi adicionado ao carrinho.`,
         });
-        return [...prevItems, { ...product, quantity: 1 }];
+        const { quantity, ...productWithoutQuantity } = product;
+        return [...prevItems, { ...productWithoutQuantity, quantity: quantityToAdd }];
       }
     });
   };
@@ -114,6 +120,46 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     return items.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  const checkout = (customerInfo: { name: string; email: string; phone: string; address: string }) => {
+    if (items.length === 0) {
+      toast({
+        title: "Carrinho Vazio",
+        description: "Adicione produtos ao carrinho antes de finalizar a compra.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Create a new sale
+    const newSale = {
+      customerId: `customer-${Date.now()}`,
+      customerName: customerInfo.name,
+      customerEmail: customerInfo.email,
+      customerPhone: customerInfo.phone,
+      customerAddress: customerInfo.address,
+      items: items.map(item => ({
+        productId: item.id,
+        productName: item.name,
+        quantity: item.quantity,
+        price: item.price
+      })),
+      total: getTotalPrice(),
+      status: "Pendente" as const,
+      paymentMethod: "Cartão de Crédito"
+    };
+
+    // Add sale to admin context
+    addSale(newSale);
+
+    // Clear cart
+    setItems([]);
+
+    toast({
+      title: "Pedido Realizado!",
+      description: `Seu pedido de R$ ${getTotalPrice().toFixed(2)} foi confirmado.`,
+    });
+  };
+
   const value = {
     items,
     addToCart,
@@ -121,7 +167,8 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     updateQuantity,
     clearCart,
     getTotalItems,
-    getTotalPrice
+    getTotalPrice,
+    checkout
   };
 
   return (

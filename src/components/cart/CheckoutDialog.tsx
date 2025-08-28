@@ -25,17 +25,19 @@ interface CheckoutDialogProps {
 }
 
 export const CheckoutDialog = ({ open, onClose }: CheckoutDialogProps) => {
-  const { clearCart, getTotalPrice, items } = useCart();
+  const { checkout, getTotalPrice, items } = useCart();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
+    address: "",
     paymentMethod: ""
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.paymentMethod) {
+    if (!formData.name || !formData.email || !formData.phone || !formData.address || !formData.paymentMethod) {
       toast({
         title: "Erro",
         description: "Preencha todos os campos obrigatórios",
@@ -44,17 +46,20 @@ export const CheckoutDialog = ({ open, onClose }: CheckoutDialogProps) => {
       return;
     }
 
-    toast({
-      title: "Pedido realizado!",
-      description: `Seu pedido no valor de R$ ${getTotalPrice().toFixed(2)} foi registrado com sucesso.`,
+    // Use the new checkout function
+    checkout({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      address: formData.address
     });
-
-    clearCart();
 
     // Reset form
     setFormData({
       name: "",
       email: "",
+      phone: "",
+      address: "",
       paymentMethod: ""
     });
     
@@ -86,6 +91,29 @@ export const CheckoutDialog = ({ open, onClose }: CheckoutDialogProps) => {
               type="email"
               value={formData.email}
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone">Telefone*</Label>
+            <Input
+              id="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+              placeholder="(11) 99999-9999"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="address">Endereço Completo*</Label>
+            <Input
+              id="address"
+              value={formData.address}
+              onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+              placeholder="Rua, número, bairro, cidade - UF"
               required
             />
           </div>
