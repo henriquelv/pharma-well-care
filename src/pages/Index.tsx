@@ -5,11 +5,15 @@ import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { FeaturedProducts } from "@/components/home/FeaturedProducts";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
+import { PWAInstallBanner } from "@/components/mobile/PWAInstallBanner";
+import { NotificationPermissionBanner } from "@/components/mobile/NotificationPermissionBanner";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <PWAInstallBanner />
+      <NotificationPermissionBanner />
       <main>
         <HeroSection />
         <CategoryGrid />

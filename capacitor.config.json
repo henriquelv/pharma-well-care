@@ -1,0 +1,20 @@
+{
+  "appId": "app.lovable.c9e77241319b41fd8635fa2fd5310068",
+  "appName": "pharma-well-care",
+  "webDir": "dist",
+  "server": {
+    "url": "https://c9e77241-319b-41fd-8635-fa2fd5310068.lovableproject.com?forceHideBadge=true",
+    "cleartext": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#16a34a",
+      "showSpinner": true,
+      "spinnerColor": "#ffffff"
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}
