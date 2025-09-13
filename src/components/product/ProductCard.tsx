@@ -63,28 +63,28 @@ export const ProductCard = ({
 
   return (
     <Card 
-      className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 shadow-md cursor-pointer hover-lift animate-fade-in bg-gradient-card"
+      className="group hover:shadow-luxury transition-smooth hover:-translate-y-3 border-0 shadow-elegant cursor-pointer hover-lift animate-fade-in bg-white/95 backdrop-blur hover:bg-white"
       onClick={handleProductClick}
     >
       <CardContent className="p-0">
-        <div className="relative overflow-hidden rounded-t-lg bg-gray-50 h-48">
+        <div className="relative overflow-hidden rounded-t-xl bg-gradient-elegant h-52">
           <img
             src={image}
             alt={name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
           
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
+          <div className="absolute top-4 left-4 flex flex-col gap-2">
             {discount && (
-              <Badge className="bg-destructive text-destructive-foreground">
-                -{discount}%
+              <Badge className="bg-destructive text-destructive-foreground font-bold text-sm px-3 py-1 rounded-full shadow-md">
+                🔥 -{discount}%
               </Badge>
             )}
             {prescriptionRequired && (
-              <Badge variant="outline" className="bg-white/90 border-warning text-warning-foreground">
+              <Badge variant="outline" className="bg-white/95 border-orange-200 text-orange-600 font-medium">
                 <FileText className="h-3 w-3 mr-1" />
-                Receita
+                📋 Receita
               </Badge>
             )}
           </div>
@@ -93,9 +93,9 @@ export const ProductCard = ({
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-3 right-3 bg-white/90 hover:bg-white opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-4 right-4 bg-white/95 hover:bg-white opacity-0 group-hover:opacity-100 transition-all hover-scale rounded-full shadow-md"
           >
-            <Heart className="h-4 w-4" />
+            <Heart className="h-4 w-4 text-red-500" />
           </Button>
 
           {/* Stock Status */}
@@ -107,12 +107,12 @@ export const ProductCard = ({
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-3">
+        <div className="p-6 space-y-4">
           <div>
-            <h3 className="font-medium text-sm line-clamp-2 leading-5 mb-1">
+            <h3 className="font-semibold text-sm line-clamp-2 leading-5 mb-2 text-foreground group-hover:text-primary transition-colors">
               {name}
             </h3>
-            <p className="text-xs text-muted-foreground line-clamp-2">
+            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
               {description}
             </p>
           </div>
@@ -129,9 +129,9 @@ export const ProductCard = ({
           )}
 
           {/* Price */}
-          <div className="space-y-1">
+          <div className="space-y-2">
             <div className="flex items-baseline gap-2">
-              <span className="text-lg font-bold text-primary">
+              <span className="text-xl font-bold text-primary">
                 {formatPrice(price)}
               </span>
               {originalPrice && originalPrice > price && (
@@ -141,21 +141,21 @@ export const ProductCard = ({
               )}
             </div>
             {originalPrice && originalPrice > price && (
-              <p className="text-xs text-success">
-                Economize {formatPrice(originalPrice - price)}
+              <p className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full inline-block">
+                💰 Economize {formatPrice(originalPrice - price)}
               </p>
             )}
           </div>
 
           {/* Add to Cart Button */}
           <Button 
-            className="w-full" 
+            className="w-full hover-scale transition-smooth font-medium" 
             disabled={!inStock}
-            size="sm"
+            size="default"
             onClick={handleAddToCart}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
-            {inStock ? 'Adicionar ao Carrinho' : 'Indisponível'}
+            {inStock ? '🛒 Adicionar ao Carrinho' : '❌ Indisponível'}
           </Button>
         </div>
       </CardContent>
