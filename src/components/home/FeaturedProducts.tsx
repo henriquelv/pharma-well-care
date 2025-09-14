@@ -1,38 +1,52 @@
 import { ProductCard } from "@/components/product/ProductCard";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { products } from "@/data/products";
-const featuredProducts = products.slice(0, 6);
+import { useProducts } from "@/hooks/useProducts";
+import { LoadingAnimation } from "@/components/ui/loading-animation";
 
 export const FeaturedProducts = () => {
-  return (
-    <section className="py-16 bg-muted/30">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">Produtos em Destaque</h2>
-            <p className="text-muted-foreground">Seleções especiais com os melhores preços</p>
+  const { data: products, isLoading, error } = useProducts();
+  const featuredProducts = products?.slice(0, 8) || [];
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <LoadingAnimation />
+            <p className="text-muted-foreground mt-4">Carregando produtos...</p>
           </div>
-          <Button variant="outline" className="hidden md:flex items-center gap-2">
-            Ver Todos
-            <ArrowRight className="h-4 w-4" />
-          </Button>
         </div>
+      </section>
+    );
+  }
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+  if (error) {
+    return (
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <p className="text-destructive">Erro ao carregar produtos.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="py-16 bg-background">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-foreground mb-4">
+            Produtos em Destaque
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Os medicamentos mais procurados com os melhores preços
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredProducts.map((product) => (
-            <ProductCard key={product.id} {...product} />
+            <ProductCard key={product.id} product={product} />
           ))}
-        </div>
-
-        {/* Mobile View All Button */}
-        <div className="mt-8 text-center md:hidden">
-          <Button variant="outline" className="w-full">
-            Ver Todos os Produtos
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
         </div>
       </div>
     </section>

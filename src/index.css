@@ -2,118 +2,111 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design System - Farmácia Bom Jesus
-All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    /* Core brand colors */
     --background: 0 0% 100%;
-    --foreground: 210 20% 15%;
-
+    --foreground: 220 9% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 210 20% 15%;
-
+    --card-foreground: 220 9% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 210 20% 15%;
-
-    /* Primary green - health and trust */
-    --primary: 142 76% 36%;
+    --popover-foreground: 220 9% 15%;
+    --primary: 198 93% 42%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 142 60% 88%;
-    --primary-dark: 142 76% 28%;
-
-    /* Secondary green variants */
-    --secondary: 142 30% 96%;
-    --secondary-foreground: 142 76% 20%;
-
-    /* Muted grays */
-    --muted: 210 40% 98%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    /* Accent green */
-    --accent: 142 40% 94%;
-    --accent-foreground: 142 76% 20%;
-
-    /* Status colors */
-    --success: 142 76% 36%;
+    --primary-light: 198 80% 55%;
+    --primary-dark: 198 95% 30%;
+    --secondary: 210 30% 95%;
+    --secondary-foreground: 220 9% 15%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 220 9% 15%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 120 93% 33%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-
-    /* UI elements */
-    --border: 210 40% 92%;
-    --input: 210 40% 96%;
-    --ring: 142 76% 36%;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 28%));
-    --gradient-light: linear-gradient(180deg, hsl(0 0% 100%), hsl(142 30% 98%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 40% 99%));
-
-    /* Shadows */
-    --shadow-soft: 0 2px 8px -2px hsl(142 76% 36% / 0.1);
-    --shadow-medium: 0 4px 16px -4px hsl(142 76% 36% / 0.15);
-    --shadow-strong: 0 8px 32px -8px hsl(142 76% 36% / 0.2);
-
-    /* Border radius system */
-    --radius: 0.75rem;
-
+    --warning-foreground: 48 96% 89%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 198 93% 42%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 217.2 10.6% 64.9%;
+    
+    /* Pharmacy Professional Colors */
+    --pharmacy-blue: 198 93% 42%;
+    --pharmacy-blue-light: 198 80% 55%;
+    --pharmacy-blue-dark: 198 95% 30%;
+    --pharmacy-green: 120 93% 33%;
+    --pharmacy-gray: 220 9% 15%;
+    --pharmacy-gray-light: 210 30% 95%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted)));
+    
+    /* Shadows */
+    --shadow-subtle: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-medium: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-large: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-luxury: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 220 13% 9%;
     --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
+    --card: 220 13% 9%;
     --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
+    --popover: 220 13% 9%;
     --popover-foreground: 210 40% 98%;
-
-    --primary: 142 60% 50%;
+    --primary: 198 93% 42%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 142 60% 95%;
-    --primary-dark: 142 76% 20%;
-
-    --secondary: 217.2 32.6% 17.5%;
+    --primary-light: 198 80% 55%;
+    --primary-dark: 198 95% 30%;
+    --secondary: 217 33% 18%;
     --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 18%;
     --accent-foreground: 210 40% 98%;
-
-    --success: 142 76% 36%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 120 93% 33%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 142 76% 36%;
+    --warning-foreground: 48 96% 89%;
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 198 93% 42%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 94.1%;
+    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 10.6% 64.9%;
   }
 }
 
@@ -121,49 +114,70 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
   }
+}
 
-  /* Melhorias no design */
+@layer components {
+  /* Professional Gradients */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  /* Professional Shadows */
+  .shadow-subtle {
+    box-shadow: var(--shadow-subtle);
+  }
+  
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+  
+  .shadow-large {
+    box-shadow: var(--shadow-large);
+  }
+  
+  .shadow-luxury {
+    box-shadow: var(--shadow-luxury);
+  }
+  
+  /* Smooth Transitions */
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+  
+  /* Interactive Elements */
+  .hover-scale {
+    @apply transition-smooth hover:scale-105;
+  }
+  
+  .hover-lift {
+    @apply transition-smooth hover:-translate-y-1 hover:shadow-large;
+  }
+  
+  /* Professional Typography */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent;
+  }
+  
+  /* Line clamp utility */
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-  }
-
-  /* Animações personalizadas */
-  .animate-fade-in {
-    animation: fadeIn 0.3s ease-in-out;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Efeitos de hover */
-  .hover-lift {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px -8px hsl(var(--primary) / 0.2);
-  }
-
-  /* Gradientes customizados */
-  .bg-gradient-primary {
-    background: var(--gradient-primary);
-  }
-
-  .bg-gradient-light {
-    background: var(--gradient-light);
-  }
-
-  .bg-gradient-card {
-    background: var(--gradient-card);
   }
 }

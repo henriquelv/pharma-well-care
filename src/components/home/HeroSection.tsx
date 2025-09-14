@@ -5,90 +5,63 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export const HeroSection = () => {
   return (
-    <section className="bg-gradient-pharmacy py-20 relative overflow-hidden">
+    <section className="bg-gradient-primary py-20 relative overflow-hidden">
       {/* Background decorations */}
-      <div className="absolute top-0 left-0 w-full h-full opacity-5">
-        <div className="absolute top-10 left-10 text-6xl">💊</div>
-        <div className="absolute top-32 right-20 text-4xl">🧬</div>
-        <div className="absolute bottom-20 left-20 text-5xl">✨</div>
-        <div className="absolute bottom-10 right-10 text-3xl">🩺</div>
-      </div>
+      <div className="absolute inset-0 bg-primary-dark/10"></div>
       
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-5xl mx-auto text-center space-y-10">
-          {/* Main Hero Content */}
-          <div className="space-y-6 animate-fade-in">
-            <h1 className="text-5xl md:text-7xl font-bold text-foreground leading-tight">
-              Sua <span className="text-primary bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">Saúde</span> em Primeiro Lugar
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              🏆 Mais de 40 anos de tradição e compromisso com sua saúde.<br/>
-              💊 Medicamentos, dermocosméticos e cuidados especiais com entrega rápida e segura.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 text-lg">
-              <span className="bg-primary/10 text-primary px-4 py-2 rounded-full font-medium">✅ Entrega Grátis</span>
-              <span className="bg-primary/10 text-primary px-4 py-2 rounded-full font-medium">🕐 24h Online</span>
-              <span className="bg-primary/10 text-primary px-4 py-2 rounded-full font-medium">🔒 100% Seguro</span>
-            </div>
-          </div>
+        <div className="text-center max-w-4xl mx-auto">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+            Sua Saúde em <span className="text-primary-light">Primeiro Lugar</span>
+          </h1>
+          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+            Medicamentos com qualidade, segurança e os melhores preços da região. 
+            Cuidamos da sua família há mais de 20 anos.
+          </p>
 
           {/* Search Bar */}
-          <div className="max-w-3xl mx-auto">
-            <div className="relative group">
-              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <div className="max-w-2xl mx-auto mb-12">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
-                placeholder="🔍 Busque por medicamentos, marcas ou princípio ativo..."
-                className="pl-16 pr-32 h-16 text-lg border-2 focus:border-primary rounded-2xl shadow-luxury hover:shadow-glow transition-all bg-white/95 backdrop-blur"
+                placeholder="Busque por medicamentos, vitaminas ou marcas..."
+                className="pl-12 pr-32 h-14 text-lg border-0 rounded-xl bg-white/95 backdrop-blur"
               />
-              <Button className="absolute right-2 top-2 h-12 px-8 rounded-xl hover-scale transition-smooth">
-                🔎 Buscar
+              <Button className="absolute right-2 top-2 h-10 px-6 rounded-lg">
+                Buscar
               </Button>
             </div>
-            <p className="text-sm text-muted-foreground mt-3">
-              💡 Dica: Pesquise por "dor de cabeça", "vitamina C" ou nome do medicamento
-            </p>
           </div>
 
           {/* Trust Indicators */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-            <Card className="border-0 shadow-luxury bg-white/90 backdrop-blur hover-lift transition-smooth hover:shadow-glow group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Truck className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="font-bold text-lg mb-3">🚚 Entrega Rápida</h3>
-                <p className="text-muted-foreground">
-                  Receba seus medicamentos em casa em até 2 horas na Grande São Paulo
-                </p>
-                <div className="mt-3 text-xs text-primary font-medium">Grátis acima de R$ 50</div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-luxury bg-white/90 backdrop-blur hover-lift transition-smooth hover:shadow-glow group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Shield className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="font-bold text-lg mb-3">🔒 100% Seguro</h3>
-                <p className="text-muted-foreground">
-                  Site protegido, farmacêutico responsável e certificado ANVISA
-                </p>
-                <div className="mt-3 text-xs text-primary font-medium">SSL + Criptografia</div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-luxury bg-white/90 backdrop-blur hover-lift transition-smooth hover:shadow-glow group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Clock className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="font-bold text-lg mb-3">🕐 Sempre Aberto</h3>
-                <p className="text-muted-foreground">
-                  Pedidos online 24h por dia, 7 dias por semana
-                </p>
-                <div className="mt-3 text-xs text-primary font-medium">Atendimento humanizado</div>
-              </CardContent>
-            </Card>
+          <div className="grid md:grid-cols-3 gap-6 mt-12">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover-lift">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-white mb-2">Entrega Rápida</h3>
+              <p className="text-white/80 text-sm">Receba em casa em até 2 horas</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover-lift">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-white mb-2">100% Seguro</h3>
+              <p className="text-white/80 text-sm">Pagamento protegido e dados seguros</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover-lift">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-white mb-2">Sempre Aberto</h3>
+              <p className="text-white/80 text-sm">Atendimento 24 horas por dia</p>
+            </div>
           </div>
         </div>
       </div>

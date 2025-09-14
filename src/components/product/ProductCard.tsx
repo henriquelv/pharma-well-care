@@ -6,32 +6,18 @@ import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  rating?: number;
-  reviewCount?: number;
-  prescriptionRequired?: boolean;
-  inStock?: boolean;
-  discount?: number;
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    image_url: string | null;
+    category: string;
+    description?: string | null;
+    requires_prescription?: boolean;
+  };
 }
 
-export const ProductCard = ({
-  id,
-  name,
-  description,
-  price,
-  originalPrice,
-  image,
-  rating = 4.5,
-  reviewCount = 0,
-  prescriptionRequired = false,
-  inStock = true,
-  discount
-}: ProductCardProps) => {
+export const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -44,119 +30,66 @@ export const ProductCard = ({
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (inStock) {
-      addToCart({
-        id,
-        name,
-        price,
-        originalPrice,
-        image,
-        prescriptionRequired,
-        inStock
-      });
-    }
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image_url || '',
+      inStock: true,
+      quantity: 1
+    });
   };
 
   const handleProductClick = () => {
-    navigate(`/produto/${id}`);
+    navigate(`/produto/${product.id}`);
   };
 
   return (
     <Card 
-      className="group hover:shadow-luxury transition-smooth hover:-translate-y-3 border-0 shadow-elegant cursor-pointer hover-lift animate-fade-in bg-white/95 backdrop-blur hover:bg-white"
+      className="group hover:shadow-luxury transition-smooth hover:-translate-y-1 border-0 shadow-medium cursor-pointer bg-white"
       onClick={handleProductClick}
     >
       <CardContent className="p-0">
-        <div className="relative overflow-hidden rounded-t-xl bg-gradient-elegant h-52">
+        <div className="relative overflow-hidden rounded-t-lg">
           <img
-            src={image}
-            alt={name}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            src={product.image_url || '/placeholder-product.jpg'}
+            alt={product.name}
+            className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
           />
-          
-          {/* Badges */}
-          <div className="absolute top-4 left-4 flex flex-col gap-2">
-            {discount && (
-              <Badge className="bg-destructive text-destructive-foreground font-bold text-sm px-3 py-1 rounded-full shadow-md">
-                🔥 -{discount}%
-              </Badge>
-            )}
-            {prescriptionRequired && (
-              <Badge variant="outline" className="bg-white/95 border-orange-200 text-orange-600 font-medium">
-                <FileText className="h-3 w-3 mr-1" />
-                📋 Receita
-              </Badge>
-            )}
-          </div>
-
-          {/* Favorite Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-4 right-4 bg-white/95 hover:bg-white opacity-0 group-hover:opacity-100 transition-all hover-scale rounded-full shadow-md"
-          >
-            <Heart className="h-4 w-4 text-red-500" />
-          </Button>
-
-          {/* Stock Status */}
-          {!inStock && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <Badge variant="destructive">Indisponível</Badge>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {product.requires_prescription && (
+            <div className="absolute top-2 right-2 bg-warning text-warning-foreground px-2 py-1 rounded text-xs font-medium">
+              Receita
             </div>
           )}
+          <Button
+            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 translate-y-8 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white text-primary hover:bg-primary hover:text-white"
+            onClick={handleAddToCart}
+          >
+            <ShoppingCart className="w-4 h-4 mr-2" />
+            Adicionar
+          </Button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-4">
+        <div className="p-4 space-y-3">
           <div>
             <h3 className="font-semibold text-sm line-clamp-2 leading-5 mb-2 text-foreground group-hover:text-primary transition-colors">
-              {name}
+              {product.name}
             </h3>
-            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-              {description}
-            </p>
-          </div>
-
-          {/* Rating */}
-          {reviewCount > 0 && (
-            <div className="flex items-center gap-1">
-              <div className="flex items-center">
-                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                <span className="text-xs font-medium ml-1">{rating}</span>
-              </div>
-              <span className="text-xs text-muted-foreground">({reviewCount})</span>
-            </div>
-          )}
-
-          {/* Price */}
-          <div className="space-y-2">
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-primary">
-                {formatPrice(price)}
-              </span>
-              {originalPrice && originalPrice > price && (
-                <span className="text-sm text-muted-foreground line-through">
-                  {formatPrice(originalPrice)}
-                </span>
-              )}
-            </div>
-            {originalPrice && originalPrice > price && (
-              <p className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full inline-block">
-                💰 Economize {formatPrice(originalPrice - price)}
+            {product.description && (
+              <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                {product.description}
               </p>
             )}
           </div>
 
-          {/* Add to Cart Button */}
-          <Button 
-            className="w-full hover-scale transition-smooth font-medium" 
-            disabled={!inStock}
-            size="default"
-            onClick={handleAddToCart}
-          >
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            {inStock ? '🛒 Adicionar ao Carrinho' : '❌ Indisponível'}
-          </Button>
+          <div className="space-y-2">
+            <div className="flex items-baseline gap-2">
+              <span className="text-lg font-bold text-primary">
+                {formatPrice(product.price)}
+              </span>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

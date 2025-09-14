@@ -32,12 +32,12 @@ export const TestimonialsSection = () => {
   return (
     <section className="py-16 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="text-center space-y-4 mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-            ⭐ O que Nossos Clientes Dizem
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-foreground mb-4">
+            O que nossos clientes dizem
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Milhares de pessoas confiam na nossa farmácia. Veja alguns depoimentos reais.
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Mais de 10.000 clientes satisfeitos confiam na nossa qualidade e atendimento
           </p>
         </div>
 
