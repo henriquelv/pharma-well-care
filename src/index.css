@@ -10,10 +10,10 @@
     --card-foreground: 220 9% 15%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 9% 15%;
-    --primary: 225 100% 35%;
+    --primary: 225 65% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 225 85% 45%;
-    --primary-dark: 225 100% 25%;
+    --primary-light: 225 50% 55%;
+    --primary-dark: 225 75% 35%;
     --secondary: 210 30% 95%;
     --secondary-foreground: 220 9% 15%;
     --muted: 210 40% 96%;
@@ -22,13 +22,13 @@
     --accent-foreground: 220 9% 15%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --success: 120 100% 35%;
+    --success: 120 65% 40%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 225 100% 35%;
+    --ring: 225 65% 45%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -44,13 +44,13 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 10.6% 64.9%;
     
-    /* Farmácia Bom Jesus Brand Colors */
-    --brand-blue: 225 100% 35%;
-    --brand-blue-light: 225 85% 45%;
-    --brand-blue-dark: 225 100% 25%;
-    --brand-green: 120 100% 35%;
-    --brand-green-light: 120 85% 45%;
-    --brand-green-dark: 120 100% 25%;
+    /* Farmácia Bom Jesus Brand Colors - Tons Suaves */
+    --brand-blue: 225 65% 45%;
+    --brand-blue-light: 225 50% 55%;
+    --brand-blue-dark: 225 75% 35%;
+    --brand-green: 120 65% 40%;
+    --brand-green-light: 120 50% 50%;
+    --brand-green-dark: 120 75% 30%;
     
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
@@ -75,10 +75,10 @@
     --card-foreground: 210 40% 98%;
     --popover: 220 13% 9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 225 100% 35%;
+    --primary: 225 65% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 225 85% 45%;
-    --primary-dark: 225 100% 25%;
+    --primary-light: 225 50% 55%;
+    --primary-dark: 225 75% 35%;
     --secondary: 217 33% 18%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 18%;
@@ -93,7 +93,7 @@
     --warning-foreground: 48 96% 89%;
     --border: 217 33% 18%;
     --input: 217 33% 18%;
-    --ring: 225 100% 35%;
+    --ring: 225 65% 45%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
