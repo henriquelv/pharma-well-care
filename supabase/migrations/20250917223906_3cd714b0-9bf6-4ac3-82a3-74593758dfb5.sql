@@ -1,0 +1,22 @@
+-- Adicionar mais produtos à farmácia
+INSERT INTO public.products (name, description, price, category, image_url, stock_quantity, requires_prescription) VALUES
+('Soro Fisiológico 9ml - 30 ampolas', 'Soro fisiológico estéril para higiene nasal e ocular', 8.50, 'Higiene', '/src/assets/products/soro-fisiologico.jpg', 100, false),
+('Termômetro Digital', 'Termômetro digital com display LCD para medição rápida', 25.90, 'Equipamentos', '/src/assets/products/termometro.jpg', 25, false),
+('Álcool Gel 70% - 500ml', 'Álcool em gel antisséptico para higienização das mãos', 12.90, 'Higiene', '/src/assets/products/alcool-gel.jpg', 80, false),
+('Gaze Estéril 7.5x7.5cm - 10 unidades', 'Gaze estéril para curativos e procedimentos médicos', 6.50, 'Curativos', '/src/assets/products/gaze.jpg', 150, false),
+('Esparadrapo Impermeável 2.5cm x 4.5m', 'Esparadrapo hipoalergênico à prova dágua', 8.90, 'Curativos', '/src/assets/products/esparadrapo.jpg', 75, false),
+('Complexo B - 60 drágeas', 'Complexo vitamínico B para energia e metabolismo', 18.90, 'Vitaminas', '/src/assets/products/complexo-b.jpg', 60, false),
+('Ômega 3 1000mg - 60 cápsulas', 'Suplemento de ômega 3 para saúde cardiovascular', 32.90, 'Vitaminas', '/src/assets/products/omega3.jpg', 45, false),
+('Dorflex 36 comprimidos', 'Analgésico e relaxante muscular para dores e tensões', 14.50, 'Analgésicos', '/src/assets/products/dorflex.jpg', 90, false),
+('Novalgina 500mg - 20 comprimidos', 'Analgésico e antitérmico de ação rápida', 16.90, 'Analgésicos', '/src/assets/products/novalgina.jpg', 70, false),
+('Shampoo Anticaspa 200ml', 'Shampoo medicamentoso para controle da caspa', 28.50, 'Dermocosméticos', '/src/assets/products/shampoo-anticaspa.jpg', 40, false),
+('Protetor Labial FPS 30', 'Protetor labial com filtro solar para lábios sensíveis', 12.90, 'Dermocosméticos', '/src/assets/products/protetor-labial.jpg', 65, false),
+('Loção Hidratante Corporal 400ml', 'Hidratante corporal para pele seca e sensível', 22.90, 'Dermocosméticos', '/src/assets/products/locao-hidratante.jpg', 35, false),
+('Fralda Geriátrica M - 8 unidades', 'Fralda geriátrica com alta absorção e conforto', 24.90, 'Geriatria', '/src/assets/products/fralda-geriatrica.jpg', 50, false),
+('Supositório Glicerina Infantil - 12 unidades', 'Laxante suave para uso infantil', 9.50, 'Infantil', '/src/assets/products/supositorio-glicerina.jpg', 85, false),
+('Chupeta Ortodôntica Silicone', 'Chupeta anatômica para desenvolvimento oral correto', 15.90, 'Infantil', '/src/assets/products/chupeta.jpg', 30, false),
+('Mamadeira 240ml Anticólica', 'Mamadeira com sistema anticólica e bico ortodôntico', 28.90, 'Infantil', '/src/assets/products/mamadeira.jpg', 20, false),
+('Curativo Adesivo Transparente 10x12cm', 'Curativo transparente e respirável para feridas', 18.50, 'Curativos', '/src/assets/products/curativo-transparente.jpg', 40, false),
+('Soro Caseiro - 10 sachês', 'Soro de reidratação oral para reposição hidroeletrolítica', 7.90, 'Medicamentos', '/src/assets/products/soro-caseiro.jpg', 120, false),
+('Colírio Lubrificante 15ml', 'Lágrima artificial para olhos secos e irritados', 19.90, 'Oftalmologia', '/src/assets/products/colirio-lubrificante.jpg', 55, false),
+('Pomada para Assadura 45g', 'Pomada preventiva e curativa para assaduras', 16.50, 'Infantil', '/src/assets/products/pomada-assadura.jpg', 70, false);
