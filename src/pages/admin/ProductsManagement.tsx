@@ -22,57 +22,63 @@ import {
   Filter, 
   MoreHorizontal, 
   Edit, 
-  Trash2, 
-  Eye,
-  Star,
-  StarOff
+  Trash2
 } from "lucide-react";
-import { useAdmin } from "@/contexts/AdminContext";
-import { ProductEditDialog } from "@/components/admin/ProductEditDialog";
-import { Product } from "@/data/products";
+import { useAdminProducts, AdminProduct } from "@/hooks/useAdminProducts";
+import { OrbitalLoader } from "@/components/ui/orbital-loader";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ProductsManagement = () => {
-  const { products, categories, deleteProduct } = useAdmin();
+  const { data: products, isLoading } = useAdminProducts();
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [showDialog, setShowDialog] = useState(false);
   
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = products?.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.category.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = filterCategory === "all" || product.category === filterCategory;
     return matchesSearch && matchesCategory;
-  });
+  }) || [];
 
-  const categoryNames = [...new Set(categories.map(c => c.name))];
+  const categoryNames = [...new Set(products?.map(p => p.category) || [])];
 
-  const handleEdit = (product: Product) => {
-    setEditingProduct(product);
-    setShowDialog(true);
-  };
-
-  const handleAdd = () => {
-    setEditingProduct(null);
-    setShowDialog(true);
-  };
-
-  const handleDelete = (productId: string) => {
+  const handleDelete = async (productId: string) => {
     if (confirm("Tem certeza que deseja excluir este produto?")) {
-      deleteProduct(productId);
+      const { error } = await supabase
+        .from('products')
+        .update({ active: false })
+        .eq('id', productId);
+      
+      if (error) {
+        toast.error("Erro ao excluir produto");
+      } else {
+        toast.success("Produto excluído com sucesso");
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+      }
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <OrbitalLoader message="Carregando produtos..." />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gerenciar Produtos</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-bold tracking-tight">Gerenciar Produtos</h1>
+          <p className="text-muted-foreground text-sm">
             Gerencie seu catálogo de medicamentos e produtos
           </p>
         </div>
-        <Button onClick={handleAdd}>
+        <Button size="sm">
           <Plus className="mr-2 h-4 w-4" />
           Novo Produto
         </Button>
@@ -86,14 +92,14 @@ const ProductsManagement = () => {
             placeholder="Buscar produtos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
+            className="pl-8 h-9"
           />
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">
+            <Button variant="outline" size="sm">
               <Filter className="mr-2 h-4 w-4" />
-              Categoria: {filterCategory === "all" ? "Todas" : filterCategory}
+              {filterCategory === "all" ? "Todas" : filterCategory}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -122,7 +128,6 @@ const ProductsManagement = () => {
               <TableHead>Preço</TableHead>
               <TableHead>Estoque</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Destaque</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -132,36 +137,34 @@ const ProductsManagement = () => {
                 <TableCell>
                   <div className="flex items-center space-x-3">
                     <img 
-                      src={product.image} 
+                      src={product.image_url || '/placeholder.svg'} 
                       alt={product.name}
-                      className="w-12 h-12 rounded-lg object-cover"
+                      className="w-10 h-10 rounded-lg object-cover"
                     />
                     <div>
-                      <div className="font-medium">{product.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        SKU: {product.id.toString().padStart(6, '0')}
+                      <div className="font-medium text-sm">{product.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {product.requires_prescription ? 'Receita necessária' : 'Venda livre'}
                       </div>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary">{product.category}</Badge>
+                  <Badge variant="secondary" className="text-xs">{product.category}</Badge>
                 </TableCell>
-                <TableCell>R$ {product.price.toFixed(2)}</TableCell>
+                <TableCell className="text-sm">R$ {product.price.toFixed(2)}</TableCell>
                 <TableCell>
                   <Badge 
-                    variant={product.inStock ? "default" : "destructive"}
+                    variant={product.stock_quantity > 10 ? "default" : product.stock_quantity > 0 ? "secondary" : "destructive"}
+                    className="text-xs"
                   >
-                    {product.inStock ? "Em estoque" : "Sem estoque"}
+                    {product.stock_quantity} un.
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="default">Ativo</Badge>
-                </TableCell>
-                <TableCell>
-                  <Button variant="ghost" size="sm">
-                    <StarOff className="h-4 w-4" />
-                  </Button>
+                  <Badge variant={product.active ? "default" : "secondary"} className="text-xs">
+                    {product.active ? "Ativo" : "Inativo"}
+                  </Badge>
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
@@ -171,7 +174,7 @@ const ProductsManagement = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEdit(product)}>
+                      <DropdownMenuItem>
                         <Edit className="mr-2 h-4 w-4" />
                         Editar
                       </DropdownMenuItem>
@@ -190,12 +193,10 @@ const ProductsManagement = () => {
           </TableBody>
         </Table>
       </div>
-
-      <ProductEditDialog 
-        product={editingProduct || undefined}
-        open={showDialog}
-        onClose={() => setShowDialog(false)}
-      />
+      
+      <p className="text-xs text-muted-foreground text-center">
+        Total: {filteredProducts.length} produtos
+      </p>
     </div>
   );
 };

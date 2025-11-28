@@ -1,11 +1,11 @@
-import { Search, Truck, ShieldCheck, Clock } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "motion/react";
 
 export const HeroSection = () => {
   return (
-    <section className="relative py-20 overflow-hidden bg-gradient-to-br from-primary/10 via-background to-primary/5">
+    <section className="relative py-16 overflow-hidden bg-gradient-to-br from-primary/10 via-background to-primary/5">
       {/* Decorative blobs */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/15 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
@@ -35,7 +35,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="max-w-2xl mx-auto mb-12"
+            className="max-w-2xl mx-auto"
           >
             <div className="relative glass-card-strong rounded-2xl p-2">
               <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -48,46 +48,6 @@ export const HeroSection = () => {
               </Button>
             </div>
           </motion.div>
-
-          {/* Trust Indicators with Glass Effect */}
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="glass-card rounded-2xl p-6 text-center hover-lift"
-            >
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Truck className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">Entrega Rápida</h3>
-              <p className="text-muted-foreground text-sm">Receba em casa em até 2 horas</p>
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="glass-card rounded-2xl p-6 text-center hover-lift"
-            >
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                <ShieldCheck className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">100% Seguro</h3>
-              <p className="text-muted-foreground text-sm">Pagamento protegido e dados seguros</p>
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
-              className="glass-card rounded-2xl p-6 text-center hover-lift"
-            >
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Clock className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">Sempre Aberto</h3>
-              <p className="text-muted-foreground text-sm">Atendimento 24 horas por dia</p>
-            </motion.div>
-          </div>
         </div>
       </div>
     </section>

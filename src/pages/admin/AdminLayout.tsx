@@ -49,10 +49,10 @@ const AdminLayout = () => {
       )}>
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between h-16 px-6 border-b">
+          <div className="flex items-center justify-between h-14 px-4 border-b">
             <div className="flex items-center space-x-2">
               <img src={logo} alt="Farmácia Bom Jesus Logo" className="h-8 w-auto" />
-              <span className="font-semibold">Admin Panel</span>
+              <span className="font-semibold text-sm">Admin Panel</span>
             </div>
             <Button 
               variant="ghost" 
@@ -64,7 +64,7 @@ const AdminLayout = () => {
             </Button>
           </div>
 
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav className="flex-1 px-3 py-4 space-y-1">
             {navigation.map((item) => (
               <NavLink
                 key={item.name}
@@ -84,14 +84,14 @@ const AdminLayout = () => {
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t space-y-2">
+          <div className="p-3 border-t space-y-1">
             <NavLink to="/">
-              <Button variant="outline" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start">
                 <Home className="mr-2 h-4 w-4" />
                 Voltar à Loja
               </Button>
             </NavLink>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button variant="ghost" size="sm" className="w-full justify-start">
               <LogOut className="mr-2 h-4 w-4" />
               Sair
             </Button>
@@ -101,7 +101,7 @@ const AdminLayout = () => {
 
       {/* Main content */}
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
+        <header className="sticky top-0 z-30 flex h-12 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
           <Button
             variant="ghost"
             size="sm"
@@ -111,14 +111,14 @@ const AdminLayout = () => {
             <Menu className="h-4 w-4" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-lg font-semibold">Painel Administrativo - Farmácia Bom Jesus</h1>
+            <h1 className="text-sm font-semibold">Painel Administrativo - Farmácia Bom Jesus</h1>
           </div>
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">Admin</span>
+            <span className="text-xs text-muted-foreground">Admin</span>
           </div>
         </header>
 
-        <main className="p-6">
+        <main className="p-4">
           <Outlet />
         </main>
       </div>
