@@ -4,91 +4,81 @@ import {
   ShoppingCart, 
   Package, 
   DollarSign, 
-  AlertTriangle,
-  TrendingUp,
-  Users,
-  Eye,
-  Star
+  AlertTriangle
 } from "lucide-react";
-import { useAdmin } from "@/contexts/AdminContext";
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { useProducts } from "@/hooks/useProducts";
+import { OrbitalLoader } from "@/components/ui/orbital-loader";
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 
 const Dashboard = () => {
-  const { stats, sales, products, categories } = useAdmin();
+  const { data: products, isLoading } = useProducts();
 
-  // Prepare chart data
-  const categoryData = categories.map(category => {
-    const categoryProducts = products.filter(p => p.category === category.name);
-    const categoryRevenue = categoryProducts.reduce((sum, product) => 
-      sum + (product.price * (product.stockQuantity || 0) * 0.1), 0
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <OrbitalLoader message="Carregando dashboard..." />
+      </div>
     );
-    return {
-      name: category.name,
-      products: categoryProducts.length,
-      revenue: categoryRevenue,
-      color: category.color
-    };
-  }).filter(data => data.products > 0);
+  }
 
-  const salesByCategory = categories.map(category => {
-    const categoryProducts = products.filter(p => p.category === category.name);
-    const mockSales = categoryProducts.reduce((sum, product) => 
-      sum + Math.floor(Math.random() * 20) + 5, 0
-    );
-    return {
-      name: category.name,
-      vendas: mockSales,
-      fill: category.color
-    };
-  }).filter(data => data.vendas > 0);
+  // Calculate stats from real data
+  const totalProducts = products?.length || 0;
+  const lowStock = products?.filter(p => p.stock_quantity < 10).length || 0;
+  const totalValue = products?.reduce((sum, p) => sum + (p.price * p.stock_quantity), 0) || 0;
+
+  // Group products by category
+  const categoryData = products?.reduce((acc, product) => {
+    const existing = acc.find(c => c.name === product.category);
+    if (existing) {
+      existing.products++;
+      existing.value += product.price * product.stock_quantity;
+    } else {
+      acc.push({
+        name: product.category,
+        products: 1,
+        value: product.price * product.stock_quantity,
+        color: getCategoryColor(product.category)
+      });
+    }
+    return acc;
+  }, [] as Array<{ name: string; products: number; value: number; color: string }>) || [];
 
   const statsCards = [
     {
       title: "Total de Produtos",
-      value: stats.totalProducts.toString(),
-      description: `${products.filter(p => p.inStock).length} disponíveis`,
+      value: totalProducts.toString(),
+      description: `${products?.filter(p => p.stock_quantity > 0).length || 0} disponíveis`,
       icon: Package,
       color: "text-blue-600"
     },
     {
       title: "Pedidos Hoje",
-      value: stats.todayOrders.toString(),
-      description: `+${Math.round((stats.todayOrders / (sales.length || 1)) * 100)}% do total`,
+      value: "0",
+      description: "Integrar com pedidos",
       icon: ShoppingCart,
       color: "text-green-600"
     },
     {
-      title: "Receita Total",
-      value: `R$ ${stats.totalRevenue.toFixed(2)}`,
-      description: `Média: R$ ${(stats.totalRevenue / (sales.length || 1)).toFixed(2)}`,
+      title: "Valor em Estoque",
+      value: `R$ ${totalValue.toFixed(2)}`,
+      description: "Total em produtos",
       icon: DollarSign,
       color: "text-emerald-600"
     },
     {
       title: "Estoque Baixo",
-      value: stats.lowStock.toString(),
+      value: lowStock.toString(),
       description: "Produtos com menos de 10 unidades",
       icon: AlertTriangle,
       color: "text-red-600"
     }
   ];
 
-  const recentOrders = sales.slice(-4).reverse();
-
-  const topProducts = products
-    .sort((a, b) => (b.stockQuantity || 0) - (a.stockQuantity || 0))
-    .slice(0, 4)
-    .map(product => ({
-      name: product.name,
-      sales: Math.floor(Math.random() * 50) + 10, // Mock sales data
-      revenue: `R$ ${(product.price * (Math.floor(Math.random() * 50) + 10)).toFixed(2)}`
-    }));
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground text-sm">
           Visão geral das operações da Farmácia Bom Jesus
         </p>
       </div>
@@ -118,143 +108,129 @@ const Dashboard = () => {
         {/* Category Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle>Produtos por Categoria</CardTitle>
+            <CardTitle className="text-lg">Produtos por Categoria</CardTitle>
             <CardDescription>
               Distribuição de produtos nas categorias
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({name, products}) => `${name}: ${products}`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="products"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {categoryData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={categoryData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({name, products}) => `${name}: ${products}`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="products"
+                  >
+                    {categoryData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                Nenhum produto cadastrado
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Sales by Category */}
+        {/* Products by Category Bar */}
         <Card>
           <CardHeader>
-            <CardTitle>Vendas por Categoria</CardTitle>
+            <CardTitle className="text-lg">Valor por Categoria</CardTitle>
             <CardDescription>
-              Performance de vendas por categoria
+              Valor total em estoque por categoria
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={salesByCategory}>
-                <XAxis 
-                  dataKey="name" 
-                  tick={{fontSize: 12}}
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="vendas" fill="#8884d8">
-                  {salesByCategory.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            {categoryData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={categoryData}>
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{fontSize: 10}}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                  />
+                  <YAxis tick={{fontSize: 10}} />
+                  <Tooltip formatter={(value) => [`R$ ${Number(value).toFixed(2)}`, 'Valor']} />
+                  <Bar dataKey="value" fill="hsl(var(--primary))">
+                    {categoryData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                Nenhum produto cadastrado
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Recent Orders */}
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Pedidos Recentes</CardTitle>
-            <CardDescription>
-              Últimos pedidos realizados na loja
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentOrders.length > 0 ? recentOrders.map((sale) => (
-                <div key={sale.id} className="flex items-center justify-between p-3 rounded-lg border">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">#{sale.id}</span>
-                      <span className="text-sm text-muted-foreground">{sale.customerName}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium">R$ {sale.total.toFixed(2)}</span>
-                    <Badge 
-                      variant={
-                        sale.status === "Entregue" ? "default" :
-                        sale.status === "Confirmado" ? "secondary" :
-                        sale.status === "Preparando" ? "outline" : 
-                        "destructive"
-                      }
-                    >
-                      {sale.status}
-                    </Badge>
-                  </div>
-                </div>
-              )) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <ShoppingCart className="h-12 w-12 mx-auto mb-2 opacity-30" />
-                  <p>Nenhum pedido recente</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Category Overview */}
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Visão Geral das Categorias</CardTitle>
-            <CardDescription>
-              Status das categorias de produtos
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+      {/* Low Stock Products */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Produtos com Estoque Baixo</CardTitle>
+          <CardDescription>
+            Produtos que precisam de reposição (menos de 10 unidades)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {products && products.filter(p => p.stock_quantity < 10).length > 0 ? (
             <div className="space-y-3">
-              {categoryData.map((category, index) => (
-                <div key={index} className="flex items-center justify-between p-2 rounded-lg" style={{backgroundColor: `${category.color}10`}}>
+              {products.filter(p => p.stock_quantity < 10).slice(0, 5).map((product) => (
+                <div key={product.id} className="flex items-center justify-between p-3 rounded-lg border">
                   <div className="flex items-center space-x-3">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{backgroundColor: category.color}}
-                    />
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">{category.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {category.products} produtos
-                      </span>
+                    {product.image_url && (
+                      <img src={product.image_url} alt={product.name} className="w-10 h-10 object-cover rounded" />
+                    )}
+                    <div>
+                      <p className="text-sm font-medium">{product.name}</p>
+                      <p className="text-xs text-muted-foreground">{product.category}</p>
                     </div>
                   </div>
-                  <span className="text-sm font-medium">
-                    R$ {category.revenue.toFixed(2)}
-                  </span>
+                  <Badge variant={product.stock_quantity === 0 ? "destructive" : "secondary"}>
+                    {product.stock_quantity} unidades
+                  </Badge>
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <Package className="h-12 w-12 mx-auto mb-2 opacity-30" />
+              <p>Todos os produtos têm estoque adequado</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
+
+function getCategoryColor(category: string): string {
+  const colors: Record<string, string> = {
+    'Medicamentos': '#3B82F6',
+    'Vitaminas': '#F59E0B',
+    'Dermocosméticos': '#EC4899',
+    'Higiene': '#10B981',
+    'Infantil': '#FBBF24',
+    'Analgésicos': '#6366F1',
+    'Anti-inflamatórios': '#EF4444',
+    'Gastroenterologia': '#8B5CF6',
+  };
+  return colors[category] || '#6B7280';
+}
 
 export default Dashboard;

@@ -1,18 +1,20 @@
 import { ProductCard } from "@/components/product/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { OrbitalLoader } from "@/components/ui/orbital-loader";
+import { motion } from "motion/react";
 
-export const FeaturedProducts = () => {
+interface FeaturedProductsProps {
+  selectedCategory?: string | null;
+}
+
+export const FeaturedProducts = ({ selectedCategory }: FeaturedProductsProps) => {
   const { data: products, isLoading, error } = useProducts();
-  const featuredProducts = products?.slice(0, 8) || [];
 
   if (isLoading) {
     return (
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-center py-12">
-            <OrbitalLoader message="Carregando produtos..." />
-          </div>
+      <section className="py-12 bg-background">
+        <div className="container mx-auto px-4 flex justify-center">
+          <OrbitalLoader message="Carregando produtos..." />
         </div>
       </section>
     );
@@ -20,33 +22,60 @@ export const FeaturedProducts = () => {
 
   if (error) {
     return (
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center">
-            <p className="text-destructive">Erro ao carregar produtos.</p>
-          </div>
+      <section className="py-12 bg-background">
+        <div className="container mx-auto px-4 text-center text-destructive">
+          Erro ao carregar produtos. Tente novamente mais tarde.
         </div>
       </section>
     );
   }
 
+  // Filter products by category if selected
+  const filteredProducts = selectedCategory
+    ? products?.filter(product => 
+        product.category.toLowerCase().includes(selectedCategory.toLowerCase())
+      )
+    : products;
+
   return (
-    <section className="py-16 bg-background">
+    <section className="py-12 bg-gradient-to-b from-background to-muted/30">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-8"
+        >
           <h2 className="text-3xl font-bold text-foreground mb-4">
-            Produtos em Destaque
+            {selectedCategory ? `Produtos: ${selectedCategory}` : "Produtos em Destaque"}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Os medicamentos mais procurados com os melhores preços
+            {selectedCategory 
+              ? `Confira nossa seleção de ${selectedCategory.toLowerCase()}`
+              : "Confira nossa seleção especial de produtos com os melhores preços"}
           </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        </motion.div>
+
+        {filteredProducts && filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {filteredProducts.map((product, index) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                viewport={{ once: true }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-muted-foreground">
+            <p>Nenhum produto encontrado{selectedCategory ? ` na categoria "${selectedCategory}"` : ""}.</p>
+          </div>
+        )}
       </div>
     </section>
   );

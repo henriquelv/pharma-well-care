@@ -1,72 +1,68 @@
-import { useAdmin } from "@/contexts/AdminContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-import { FileText, TrendingUp, Package, DollarSign, Users, Calendar } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { TrendingUp, Package, DollarSign, Calendar } from "lucide-react";
+import { useAdminProducts } from "@/hooks/useAdminProducts";
+import { OrbitalLoader } from "@/components/ui/orbital-loader";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const ReportsManagement = () => {
-  const { sales, products, categories, stats } = useAdmin();
-
-  // Sales by month
-  const monthlySales = sales.reduce((acc, sale) => {
-    const month = new Date(sale.date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
-    const existing = acc.find(item => item.month === month);
-    if (existing) {
-      existing.total += sale.total;
-      existing.orders += 1;
-    } else {
-      acc.push({ month, total: sale.total, orders: 1 });
+  const { data: products, isLoading: productsLoading } = useAdminProducts();
+  
+  const { data: orders, isLoading: ordersLoading } = useQuery({
+    queryKey: ['admin-orders-reports'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
     }
-    return acc;
-  }, [] as Array<{ month: string; total: number; orders: number }>);
+  });
 
-  // Top selling products
-  const productSales = sales.flatMap(sale => sale.items).reduce((acc, item) => {
-    const existing = acc.find(p => p.id === item.productId);
-    if (existing) {
-      existing.quantity += item.quantity;
-      existing.revenue += item.quantity * item.price;
-    } else {
-      const product = products.find(p => p.id === item.productId);
-      if (product) {
-        acc.push({
-          id: item.productId,
-          name: product.name,
-          quantity: item.quantity,
-          revenue: item.quantity * item.price
-        });
-      }
-    }
-    return acc;
-  }, [] as Array<{ id: string; name: string; quantity: number; revenue: number }>);
+  if (productsLoading || ordersLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <OrbitalLoader message="Carregando relatórios..." />
+      </div>
+    );
+  }
 
-  const topProducts = productSales.sort((a, b) => b.quantity - a.quantity).slice(0, 5);
-
-  // Sales by category
-  const categorySales = categories.map(category => {
-    const categoryProducts = products.filter(p => p.category === category.name);
-    const categoryRevenue = productSales
-      .filter(ps => categoryProducts.some(cp => cp.id === ps.id))
-      .reduce((sum, ps) => sum + ps.revenue, 0);
-    
-    return {
-      name: category.name,
-      value: categoryRevenue,
-      color: category.color
-    };
-  }).filter(item => item.value > 0);
-
-  const totalRevenue = sales.reduce((sum, sale) => sum + sale.total, 0);
-  const totalOrders = sales.length;
+  // Calculate stats from real data
+  const totalProducts = products?.length || 0;
+  const lowStock = products?.filter(p => p.stock_quantity < 10).length || 0;
+  const totalStockValue = products?.reduce((sum, p) => sum + (p.price * p.stock_quantity), 0) || 0;
+  const totalOrders = orders?.length || 0;
+  const totalRevenue = orders?.reduce((sum, o) => sum + o.total_amount, 0) || 0;
   const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
+  // Group products by category for charts
+  const categoryData = products?.reduce((acc, product) => {
+    const existing = acc.find(c => c.name === product.category);
+    if (existing) {
+      existing.products++;
+      existing.value += product.price * product.stock_quantity;
+    } else {
+      acc.push({
+        name: product.category,
+        products: 1,
+        value: product.price * product.stock_quantity,
+        color: getCategoryColor(product.category)
+      });
+    }
+    return acc;
+  }, [] as Array<{ name: string; products: number; value: number; color: string }>) || [];
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Relatórios</h1>
-        <p className="text-muted-foreground">
-          Análises detalhadas de vendas, produtos e performance da farmácia.
+        <h1 className="text-2xl font-bold tracking-tight">Relatórios</h1>
+        <p className="text-muted-foreground text-sm">
+          Análises detalhadas de vendas e produtos.
         </p>
       </div>
 
@@ -74,13 +70,13 @@ const ReportsManagement = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Receita Total</CardTitle>
+            <CardTitle className="text-sm font-medium">Valor em Estoque</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">R$ {totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold">R$ {totalStockValue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
-              +20.1% em relação ao mês anterior
+              Total em produtos
             </p>
           </CardContent>
         </Card>
@@ -93,7 +89,7 @@ const ReportsManagement = () => {
           <CardContent>
             <div className="text-2xl font-bold">{totalOrders}</div>
             <p className="text-xs text-muted-foreground">
-              +15% em relação ao mês anterior
+              Receita: R$ {totalRevenue.toFixed(2)}
             </p>
           </CardContent>
         </Card>
@@ -106,7 +102,7 @@ const ReportsManagement = () => {
           <CardContent>
             <div className="text-2xl font-bold">R$ {averageOrderValue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
-              +5.2% em relação ao mês anterior
+              Por pedido
             </p>
           </CardContent>
         </Card>
@@ -117,150 +113,119 @@ const ReportsManagement = () => {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{products.length}</div>
+            <div className="text-2xl font-bold">{totalProducts}</div>
             <p className="text-xs text-muted-foreground">
-              {stats.lowStock} com estoque baixo
+              {lowStock} com estoque baixo
             </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Charts */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Monthly Sales Trend */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Category Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle>Vendas por Mês</CardTitle>
+            <CardTitle className="text-lg">Produtos por Categoria</CardTitle>
             <CardDescription>
-              Evolução das vendas mensais
+              Distribuição de produtos
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer
-              config={{
-                total: {
-                  label: "Vendas",
-                  color: "hsl(var(--primary))",
-                },
-              }}
-              className="h-[300px]"
-            >
-              <LineChart data={monthlySales}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <ChartTooltip 
-                  content={<ChartTooltipContent />} 
-                  formatter={(value) => [`R$ ${Number(value).toFixed(2)}`, "Vendas"]}
-                />
-                <Line type="monotone" dataKey="total" stroke="hsl(var(--primary))" strokeWidth={2} />
-              </LineChart>
-            </ChartContainer>
+            {categoryData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={categoryData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, products }) => `${name}: ${products}`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="products"
+                  >
+                    {categoryData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                Nenhum dado disponível
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Top Selling Products */}
+        {/* Value by Category */}
         <Card>
           <CardHeader>
-            <CardTitle>Produtos Mais Vendidos</CardTitle>
+            <CardTitle className="text-lg">Valor por Categoria</CardTitle>
             <CardDescription>
-              Top 5 produtos por quantidade vendida
+              Valor em estoque por categoria
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer
-              config={{
-                quantity: {
-                  label: "Quantidade",
-                  color: "hsl(var(--primary))",
-                },
-              }}
-              className="h-[300px]"
-            >
-              <BarChart data={topProducts} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis dataKey="name" type="category" width={100} />
-                <ChartTooltip 
-                  content={<ChartTooltipContent />} 
-                  formatter={(value) => [`${value} unidades`, "Vendidos"]}
-                />
-                <Bar dataKey="quantity" fill="hsl(var(--primary))" />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* Sales by Category */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Vendas por Categoria</CardTitle>
-            <CardDescription>
-              Distribuição de receita por categoria de produtos
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{
-                value: {
-                  label: "Receita",
-                  color: "hsl(var(--primary))",
-                },
-              }}
-              className="h-[300px]"
-            >
-              <PieChart>
-                <Pie
-                  data={categorySales}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {categorySales.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <ChartTooltip 
-                  content={<ChartTooltipContent />}
-                  formatter={(value) => [`R$ ${Number(value).toFixed(2)}`, "Receita"]}
-                />
-              </PieChart>
-            </ChartContainer>
+            {categoryData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={categoryData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{fontSize: 10}}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                  />
+                  <YAxis tick={{fontSize: 10}} />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent />}
+                    formatter={(value) => [`R$ ${Number(value).toFixed(2)}`, "Valor"]}
+                  />
+                  <Bar dataKey="value" fill="hsl(var(--primary))">
+                    {categoryData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                Nenhum dado disponível
+              </div>
+            )}
           </CardContent>
         </Card>
 
         {/* Performance Summary */}
-        <Card>
+        <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Resumo de Performance</CardTitle>
+            <CardTitle className="text-lg">Resumo de Performance</CardTitle>
             <CardDescription>
-              Indicadores principais do período
+              Indicadores principais
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
+          <CardContent className="grid gap-4 md:grid-cols-4">
+            <div className="flex items-center justify-between p-3 border rounded-lg">
               <span className="text-sm font-medium">Produtos cadastrados</span>
-              <Badge variant="outline">{products.length}</Badge>
+              <Badge variant="outline">{totalProducts}</Badge>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Categorias ativas</span>
-              <Badge variant="outline">{categories.length}</Badge>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <span className="text-sm font-medium">Categorias</span>
+              <Badge variant="outline">{categoryData.length}</Badge>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-3 border rounded-lg">
               <span className="text-sm font-medium">Estoque baixo</span>
-              <Badge variant={stats.lowStock > 0 ? "destructive" : "default"}>
-                {stats.lowStock}
+              <Badge variant={lowStock > 0 ? "destructive" : "default"}>
+                {lowStock}
               </Badge>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Taxa de conversão</span>
-              <Badge variant="secondary">
-                {totalOrders > 0 ? ((totalOrders / (totalOrders + 10)) * 100).toFixed(1) : 0}%
-              </Badge>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <span className="text-sm font-medium">Pedidos realizados</span>
+              <Badge variant="secondary">{totalOrders}</Badge>
             </div>
           </CardContent>
         </Card>
@@ -268,5 +233,19 @@ const ReportsManagement = () => {
     </div>
   );
 };
+
+function getCategoryColor(category: string): string {
+  const colors: Record<string, string> = {
+    'Medicamentos': '#3B82F6',
+    'Vitaminas': '#F59E0B',
+    'Dermocosméticos': '#EC4899',
+    'Higiene': '#10B981',
+    'Infantil': '#FBBF24',
+    'Analgésicos': '#6366F1',
+    'Anti-inflamatórios': '#EF4444',
+    'Gastroenterologia': '#8B5CF6',
+  };
+  return colors[category] || '#6B7280';
+}
 
 export default ReportsManagement;

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
@@ -10,6 +11,8 @@ import { NotificationPermissionBanner } from "@/components/mobile/NotificationPe
 import { FloatingDock } from "@/components/navigation/FloatingDock";
 
 const Index = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -17,8 +20,11 @@ const Index = () => {
       <NotificationPermissionBanner />
       <main className="pb-24 md:pb-0">
         <HeroSection />
-        <CategoryGrid />
-        <FeaturedProducts />
+        <CategoryGrid 
+          onCategorySelect={setSelectedCategory} 
+          selectedCategory={selectedCategory}
+        />
+        <FeaturedProducts selectedCategory={selectedCategory} />
         <TestimonialsSection />
         <NewsletterSection />
       </main>
