@@ -7,6 +7,7 @@ import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { PWAInstallBanner } from "@/components/mobile/PWAInstallBanner";
 import { NotificationPermissionBanner } from "@/components/mobile/NotificationPermissionBanner";
+import { FloatingDock } from "@/components/navigation/FloatingDock";
 
 const Index = () => {
   return (
@@ -14,7 +15,7 @@ const Index = () => {
       <Header />
       <PWAInstallBanner />
       <NotificationPermissionBanner />
-      <main>
+      <main className="pb-24 md:pb-0">
         <HeroSection />
         <CategoryGrid />
         <FeaturedProducts />
@@ -22,6 +23,7 @@ const Index = () => {
         <NewsletterSection />
       </main>
       <Footer />
+      <FloatingDock />
     </div>
   );
 };

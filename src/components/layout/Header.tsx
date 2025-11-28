@@ -1,5 +1,5 @@
-import logoFbj from "@/assets/logo-fbj.png";
-import { Search, ShoppingCart, Menu, Phone, MapPin, Clock, User, Settings, LogOut } from "lucide-react";
+import logo from "@/assets/logo.png";
+import { Search, Menu, Phone, MapPin, Clock, User, Settings, LogOut, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CartDrawer } from "@/components/cart/CartDrawer";
@@ -20,7 +20,7 @@ export const Header = () => {
     }
   };
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 shadow-luxury">
+    <header className="glass-nav sticky top-0 z-50">
       {/* Top Bar */}
       <div className="bg-primary text-white py-2 px-4">
         <div className="container mx-auto flex justify-between items-center text-sm">
@@ -84,7 +84,7 @@ export const Header = () => {
         <div className="flex items-center gap-6">
           {/* Logo */}
           <div className="flex items-center gap-3 hover-scale transition-smooth">
-            <img src={logoFbj} alt="Farmácia Bom Jesus Logo" className="h-12 w-auto" />
+            <img src={logo} alt="Farmácia Bom Jesus Logo" className="h-12 w-auto" />
             <div className="hidden lg:block">
               <h1 className="text-xl font-bold text-primary">Farmácia Bom Jesus</h1>
               <p className="text-xs text-muted-foreground">Tradição de compromisso com sua saúde</p>

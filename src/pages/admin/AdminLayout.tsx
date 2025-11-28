@@ -1,4 +1,4 @@
-import logoFbj from "@/assets/logo-fbj.png";
+import logo from "@/assets/logo.png";
 import { useState } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -51,7 +51,7 @@ const AdminLayout = () => {
           {/* Header */}
           <div className="flex items-center justify-between h-16 px-6 border-b">
             <div className="flex items-center space-x-2">
-              <img src={logoFbj} alt="Farmácia Bom Jesus Logo" className="h-8 w-auto" />
+              <img src={logo} alt="Farmácia Bom Jesus Logo" className="h-8 w-auto" />
               <span className="font-semibold">Admin Panel</span>
             </div>
             <Button 
