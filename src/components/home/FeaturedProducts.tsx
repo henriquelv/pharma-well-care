@@ -1,6 +1,6 @@
 import { ProductCard } from "@/components/product/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
-import { LoadingAnimation } from "@/components/ui/loading-animation";
+import { OrbitalLoader } from "@/components/ui/orbital-loader";
 
 export const FeaturedProducts = () => {
   const { data: products, isLoading, error } = useProducts();
@@ -10,9 +10,8 @@ export const FeaturedProducts = () => {
     return (
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center">
-            <LoadingAnimation />
-            <p className="text-muted-foreground mt-4">Carregando produtos...</p>
+          <div className="flex flex-col items-center justify-center py-12">
+            <OrbitalLoader message="Carregando produtos..." />
           </div>
         </div>
       </section>

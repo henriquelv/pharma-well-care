@@ -120,6 +120,33 @@
 }
 
 @layer components {
+  /* Liquid Glass Effect */
+  .glass-card {
+    @apply bg-white/60 dark:bg-white/10 backdrop-blur-xl border border-white/30 dark:border-white/10;
+    box-shadow: 
+      0 8px 32px 0 rgba(31, 38, 135, 0.1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  }
+  
+  .glass-card-strong {
+    @apply bg-white/80 dark:bg-white/15 backdrop-blur-2xl border border-white/40 dark:border-white/15;
+    box-shadow: 
+      0 8px 32px 0 rgba(31, 38, 135, 0.15),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+  
+  .glass-button {
+    @apply bg-white/50 dark:bg-white/10 backdrop-blur-md border border-white/30 dark:border-white/10 hover:bg-white/70 dark:hover:bg-white/20 transition-all duration-300;
+  }
+  
+  .glass-nav {
+    @apply bg-white/70 dark:bg-black/50 backdrop-blur-xl border-b border-white/20 dark:border-white/10;
+  }
+  
+  .glass-hero {
+    @apply bg-gradient-to-br from-primary/5 via-transparent to-primary/10 backdrop-blur-sm;
+  }
+
   /* Professional Gradients */
   .bg-gradient-primary {
     background: var(--gradient-primary);
